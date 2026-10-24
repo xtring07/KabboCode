@@ -1,0 +1,538 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="KABBO CODE — a six-bit text encoding and decoding tool created by Kabbo.">
+<title>KABBO CODE - XTRING 07</title><style>
+*{box-sizing:border-box}
+:root{
+  color-scheme:light;
+  --bg:#fff;--surface:#fff;--text:#171717;
+  --muted:#777;--border:#dedede;--field:#fff;
+  --field-text:#171717;--hover:#f2f2f2;
+  --accent:#171717;--accent-text:#fff;
+  --warning:#b45309;--success:#187746;
+}
+body.dark{
+  color-scheme:dark;
+  --bg:#101010;--surface:#151515;--text:#f4f4f4;
+  --muted:#a0a0a0;--border:#383838;--field:#101010;
+  --field-text:#f4f4f4;--hover:#292929;
+  --accent:#f4f4f4;--accent-text:#101010;
+  --warning:#fbbf24;--success:#6ee7a0;
+}
+html{background:var(--bg);transition:background .2s}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  transition:background .2s,color .2s;
+}
+button,textarea{font:inherit}
+button{cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+button:focus-visible,textarea:focus-visible{
+  outline:2px solid #4389e8;outline-offset:3px;
+}
+header{
+  min-height:82px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:14px max(20px,calc((100% - 960px)/2));
+}
+.brand{
+  font-size:clamp(22px,5vw,30px);font-weight:900;
+  letter-spacing:-1.2px;white-space:nowrap;
+}
+.brand span{font-weight:400;color:var(--muted)}
+.header-right{display:flex;align-items:center;gap:12px}
+.version{font-size:10px;letter-spacing:1px;color:var(--muted)}
+main{max-width:800px;margin:auto;padding:48px 20px 35px}
+.eyebrow{
+  font-size:11px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:16px;
+}
+h1{
+  font-size:clamp(34px,7vw,48px);letter-spacing:-2px;
+  margin:0;font-weight:750;
+}
+.intro{
+  color:var(--muted);line-height:1.8;font-size:14px;
+  margin:12px 0 36px;
+}
+.toolbar{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);
+  padding-bottom:14px;
+}
+.modes{display:flex;gap:5px}
+.mode{
+  border:1px solid transparent;background:var(--bg);
+  color:var(--muted);padding:11px 13px;font-size:12px;border-radius:4px;
+}
+.mode.active{border-color:var(--text);color:var(--text);font-weight:700}
+.mode:hover,.action:hover{background:var(--hover);color:var(--text)}
+.state{font-size:10px;letter-spacing:.7px;color:var(--muted)}
+.section{margin-top:24px}
+.section-head{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;margin-bottom:10px;
+}
+.section-head label{font-size:12px;font-weight:700}
+.hint{font-size:11px;color:var(--muted);text-align:right}
+textarea{
+  display:block;width:100%;min-height:145px;resize:vertical;
+  border:1px solid var(--border);background:var(--field);
+  color:var(--field-text);border-radius:4px;padding:16px;
+  font-family:monospace;font-size:13px;line-height:1.8;
+}
+textarea::placeholder{color:var(--muted);opacity:.8}
+.output{
+  min-height:145px;border:1px solid var(--border);
+  border-radius:4px;padding:16px;background:var(--field);
+  color:var(--field-text);white-space:pre-wrap;overflow-wrap:anywhere;
+  font:13px/1.9 monospace;
+}
+.placeholder{color:var(--muted)}
+.controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.action{
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text);padding:11px 14px;border-radius:4px;font-size:12px;
+}
+.action.main{
+  background:var(--accent);color:var(--accent-text);
+  border-color:var(--accent);
+}
+.action.main:hover{opacity:.8}
+.spacer{flex:1}
+.notice{
+  font-size:12px;color:var(--muted);line-height:1.7;
+  margin:13px 0 0;overflow-wrap:anywhere;
+}
+.notice.warning{color:var(--warning)}
+.notice.success{color:var(--success)}
+hr{border:0;border-top:1px solid var(--border);margin:40px 0 22px}
+.rules-title{font-size:18px;letter-spacing:-.4px;margin:0 0 15px}
+.rules{
+  margin:0;padding-left:20px;color:var(--muted);
+  font-size:13px;line-height:1.9;
+}
+.rules li{padding-left:3px;margin-bottom:5px}
+.rules strong{color:var(--text)}
+.rule-note{
+  font-size:12px;line-height:1.8;color:var(--muted);margin-top:16px;
+}
+footer{
+  border-top:1px solid var(--border);margin-top:36px;padding-top:20px;
+  display:flex;justify-content:space-between;gap:15px;
+  color:var(--muted);font-size:11px;line-height:1.9;
+}
+footer .copyright{text-align:right}
+@media(max-width:520px){
+  header{min-height:74px;padding:12px 14px;gap:8px}
+  .brand{font-size:21px;letter-spacing:-.8px}
+  .version{display:none}
+  .header-right{gap:0}
+  main{padding:34px 15px 25px}
+  .toolbar{align-items:flex-start}
+  .modes{width:100%}
+  .mode{flex:1}
+  .state{padding-top:8px}
+  footer{font-size:10px}
+}
+</style></head><body>
+<header>
+  <div class="brand">KABBO <span>CODE</span></div>
+  <div class="header-right">
+    <span class="version">KC — 02</span>
+    <button class="action" id="themeToggle" type="button"
+      onclick="toggleTheme()">Dark theme</button>
+  </div>
+</header><main>
+  <div class="eyebrow">Code From Future</div>
+  <h1>Kabbo Code,Build it.</h1>
+  <p class="intro">
+    Encode a message into KABBO CODE or decode a code sequence
+    into readable text. A six-bit system created by Kabbo.
+  </p>  <div class="toolbar">
+    <div class="modes">
+      <button class="mode active" id="enc" type="button"
+        onclick="setMode('enc')">Text → Code</button>
+      <button class="mode" id="dec" type="button"
+        onclick="setMode('dec')">Code → Text</button>
+    </div>
+    <span class="state">LOCAL PROCESSING · 6-BIT</span>
+  </div>  <div class="section">
+    <div class="section-head">
+      <label id="inLabel" for="src">INPUT TEXT</label>
+      <span class="hint" id="inHint">Letters, numbers, symbols</span>
+    </div>
+    <textarea id="src" spellcheck="false" autocomplete="off"
+      placeholder="Enter text to encode..."></textarea>
+  </div>  <div class="section">
+    <div class="section-head">
+      <label id="outLabel">OUTPUT CODE</label>
+      <span class="hint" id="count">0 output characters</span>
+    </div><div class="output" id="out" aria-live="polite">
+  <span class="placeholder">Output appears here.</span>
+</div>
+
+<div class="controls">
+  <button class="action main" type="button"
+    onclick="copyResult()">Copy output</button>
+  <button class="action" type="button"
+    onclick="clearFields()">Clear</button>
+  <div class="spacer"></div>
+  <button class="action" type="button"
+    onclick="swap()">Swap direction</button>
+</div>
+
+<p class="notice" id="notice" role="status" aria-live="polite">
+  Conversion uses the official KABBO CODE assignments.
+</p>
+
+  </div>  <hr>  <section aria-labelledby="rulesTitle">
+    <h2 class="rules-title" id="rulesTitle">Rules of KABBO CODE</h2>
+    <ol class="rules">
+      <li><strong>Six bits per code.</strong> Each assigned character or signal uses exactly six binary digits.</li>
+      <li><strong>Separate groups.</strong> Put a space between each six-bit group when sending encoded text.</li>
+      <li><strong>Spaces are encoded.</strong> A normal text space uses <code>100010</code>. Separating code groups is different.</li>
+      <li><strong>Supported characters only.</strong> Unsupported characters, such as <code>£</code>, are flagged.</li>
+      <li><strong>Valid code groups.</strong> Each group must contain exactly six digits, using only <code>0</code> and <code>1</code>.</li>
+      <li><strong>Special tokens.</strong> START, END, ERROR, REPEAT, and @Kabbo use their assigned codes when entered as standalone tokens.</li>
+      <li><strong>Same codebook.</strong> The sender and decoder must use the same official assignments.</li>
+    </ol>
+    <p class="rule-note">
+      KABBO CODE is a text encoding system, not encryption.
+      Encoding changes how text is represented but does not by itself
+      keep messages secret.
+    </p>
+  </section>  <footer>
+    <div>
+      <strong>KABBO CODE</strong><br>
+      Created by Kabbo
+    </div>
+    <div class="copyright">
+      © 2027 XTRING 07<br>
+      All rights reversed
+    </div>
+  </footer>
+</main><script>
+"use strict";
+
+/* KABBO CODE — OFFICIAL 64-ENTRY CODEBOOK
+   Created by Kabbo | XTRING 07
+*/
+
+const C = {
+  // Numbers
+  "0":"101110",
+  "1":"110001",
+  "2":"001101",
+  "3":"111000",
+  "4":"010010",
+  "5":"100111",
+  "6":"011000",
+  "7":"110110",
+  "8":"000101",
+  "9":"101001",
+
+  // Alphabet
+  "A":"110010",
+  "B":"001111",
+  "C":"101101",
+  "D":"011010",
+  "E":"111100",
+  "F":"000110",
+  "G":"100001",
+  "H":"010111",
+  "I":"111010",
+  "J":"001000",
+  "K":"100110",
+  "L":"011101",
+  "M":"110111",
+  "N":"000011",
+  "O":"101011",
+  "P":"010000",
+  "Q":"111111",
+  "R":"001010",
+  "S":"100100",
+  "T":"011111",
+  "U":"110100",
+  "V":"000001",
+  "W":"101100",
+  "X":"010101",
+  "Y":"111001",
+  "Z":"001100",
+
+  // Space and symbols
+  " ":"100010",
+  ".":"011001",
+  ",":"110011",
+  "?":"000100",
+  "!":"101010",
+  "'":"010110",
+  '"':"111011",
+  ":":"001001",
+  ";":"100101",
+  "<":"011110",
+  ">":"110101",
+  "-":"000000",
+  "+":"101111",
+  "÷":"010001",
+  "×":"111101",
+  "=":"001110",
+  "/":"100000",
+  "(":"011011",
+  ")":"110000",
+  "{":"000111",
+  "}":"101000",
+  "[":"010100",
+  "]":"111110",
+
+  // Control signals
+  "START":"001011",
+  "END":"100011",
+  "ERROR":"010011",
+  "REPEAT":"000010",
+
+  // Special token
+  "@Kabbo":"011100"
+};
+
+/* Build and validate the reverse codebook. */
+const R = Object.create(null);
+
+for (const [key, value] of Object.entries(C)) {
+  if (!/^[01]{6}$/.test(value)) {
+    throw new Error("Invalid six-bit code assigned to: " + key);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(R, value)) {
+    throw new Error("Duplicate KABBO CODE assignment: " + value);
+  }
+
+  R[value] = key;
+}
+
+if (Object.keys(C).length !== 64 || Object.keys(R).length !== 64) {
+  throw new Error("KABBO CODE must contain exactly 64 unique entries.");
+}
+
+const SPECIALS = ["@Kabbo", "START", "REPEAT", "ERROR", "END"];
+
+let mode = "enc";
+
+const src = document.getElementById("src");
+const out = document.getElementById("out");
+const notice = document.getElementById("notice");
+
+function encode(text) {
+  const result = [];
+  let i = 0;
+
+  while (i < text.length) {
+    const rest = text.slice(i);
+    let matched = null;
+
+    for (const token of SPECIALS) {
+      if (rest.length < token.length) continue;
+
+      const candidate = rest.slice(0, token.length);
+
+      const tokenMatches = token === "@Kabbo"
+        ? candidate === "@Kabbo"
+        : candidate.toUpperCase() === token;
+
+      if (!tokenMatches) continue;
+
+      const next = rest[token.length] || "";
+
+      // Special tokens must end at a word boundary.
+      if (/[A-Za-z0-9]/.test(next)) continue;
+
+      matched = token;
+      break;
+    }
+
+    if (matched !== null) {
+      result.push(C[matched]);
+      i += matched.length;
+      continue;
+    }
+
+    const ch = text[i];
+    const key = ch === " " ? " " : ch.toUpperCase();
+
+    if (
+      key.length === 1 &&
+      Object.prototype.hasOwnProperty.call(C, key)
+    ) {
+      result.push(C[key]);
+    } else {
+      result.push("[UNSUPPORTED:" + ch + "]");
+    }
+
+    i++;
+  }
+
+  return result.join(" ");
+}
+
+function decode(text) {
+  const trimmed = text.trim();
+
+  if (!trimmed) return "";
+
+  const groups = trimmed.split(/\s+/);
+
+  return groups.map(group => {
+    if (!/^[01]{6}$/.test(group)) {
+      return "[INVALID:" + group + "]";
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(R, group)) {
+      return "[UNKNOWN:" + group + "]";
+    }
+
+    return R[group];
+  }).join("");
+}
+
+function update() {
+  const result = mode === "enc"
+    ? encode(src.value)
+    : decode(src.value);
+
+  out.textContent = result;
+
+  if (!result) {
+    out.innerHTML =
+      '<span class="placeholder">Output appears here.</span>';
+  }
+
+  document.getElementById("count").textContent =
+    result.length + " output characters";
+
+  const invalid =
+    result.includes("[UNSUPPORTED:") ||
+    result.includes("[INVALID:") ||
+    result.includes("[UNKNOWN:");
+
+  notice.className = "notice" + (invalid ? " warning" : "");
+
+  notice.textContent = invalid
+    ? "Warning: Unsupported character or invalid code detected. Check the marked item."
+    : "Conversion uses the official KABBO CODE assignments.";
+}
+
+function setMode(next) {
+  mode = next;
+
+  document.getElementById("enc").classList.toggle(
+    "active", mode === "enc"
+  );
+  document.getElementById("dec").classList.toggle(
+    "active", mode === "dec"
+  );
+
+  document.getElementById("inLabel").textContent =
+    mode === "enc" ? "INPUT TEXT" : "INPUT CODE";
+
+  document.getElementById("outLabel").textContent =
+    mode === "enc" ? "OUTPUT CODE" : "OUTPUT TEXT";
+
+  document.getElementById("inHint").textContent =
+    mode === "enc"
+      ? "Letters, numbers, symbols"
+      : "Six-bit groups separated by spaces";
+
+  src.placeholder = mode === "enc"
+    ? "Enter text to encode..."
+    : "Paste code groups here...";
+
+  update();
+}
+
+src.addEventListener("input", update);
+
+function clearFields() {
+  src.value = "";
+  update();
+  src.focus();
+}
+
+function swap() {
+  const oldOutput = out.textContent;
+
+  const validOutput =
+    oldOutput &&
+    !oldOutput.includes("[UNSUPPORTED:") &&
+    !oldOutput.includes("[INVALID:") &&
+    !oldOutput.includes("[UNKNOWN:") &&
+    oldOutput !== "Output appears here.";
+
+  const next = mode === "enc" ? "dec" : "enc";
+  setMode(next);
+
+  if (validOutput) {
+    src.value = oldOutput;
+  } else {
+    src.value = "";
+  }
+
+  update();
+}
+
+async function copyResult() {
+  const text = out.textContent;
+
+  if (!text || text === "Output appears here.") {
+    notice.className = "notice warning";
+    notice.textContent = "Nothing to copy yet.";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+
+    notice.className = "notice success";
+    notice.textContent = "Output copied.";
+  } catch (error) {
+    const temp = document.createElement("textarea");
+
+    temp.value = text;
+    temp.style.position = "fixed";
+    temp.style.opacity = "0";
+
+    document.body.appendChild(temp);
+    temp.select();
+
+    let copied = false;
+
+    try {
+      copied = document.execCommand("copy");
+    } catch (e) {}
+
+    temp.remove();
+
+    notice.className =
+      "notice" + (copied ? " success" : " warning");
+
+    notice.textContent = copied
+      ? "Output copied."
+      : "Copy unavailable. Select the output and copy it manually.";
+  }
+}
+
+function toggleTheme() {
+  const dark = document.body.classList.toggle("dark");
+
+  document.getElementById("themeToggle").textContent =
+    dark ? "Light theme" : "Dark theme";
+
+  document.querySelector('meta[name="theme-color"]').content =
+    dark ? "#101010" : "#ffffff";
+}
+
+update();
+</script></body>
+</html>
